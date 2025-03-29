@@ -1,18 +1,22 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
 import { apiService } from "../plugins/api";
+
+interface AuthResponse {
+  token: string;
+  user?: {};
+}
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
-    access: null,
+    token: localStorage.getItem("token") || null,
     refresh: null,
     isAuthenticated: false,
   }),
 
   getters: {
     getUser: (state) => state.user,
-    getAccessToken: (state) => state.access,
+    getAccessToken: (state) => state.token,
     getRefreshToken: (state) => state.refresh,
     isUserAuthenticated: (state) => state.isAuthenticated,
   },
@@ -22,15 +26,16 @@ export const useAuthStore = defineStore("auth", {
       // user.value = { username };
       // isAuthenticated.value = true;
       try {
-        const response = await apiService.post("/auth/login", {
+        const response: any = await apiService.post("/auth/login", {
           username,
           password,
         });
 
-        const { access_token, user }: any = response;
+        const { token, user }: any = response;
         this.user = user;
-        this.access = access_token;
+        this.token = token;
         this.isAuthenticated = true;
+        localStorage.setItem("token", token);
         return true;
       } catch (error) {
         console.log("login:", error);

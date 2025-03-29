@@ -21,6 +21,22 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/auth/, ""),
       },
+      // "/common": {
+      //   target: process.env.VITE_API_BASE_URL || "http://localhost:8000",
+      //   ws: true,
+      //   changeOrigin: true,
+      //   secure: false,
+      //   configure: (proxy, _options) => {
+      //     proxy.on("error", (err, _req, _res) => {
+      //       console.log("socket proxy error", err);
+      //     });
+      //   },
+      // },
+    },
+    cors: {
+      origin: ["http://localhost:4000"], // Allow your frontend origin
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"],
     },
   },
 });

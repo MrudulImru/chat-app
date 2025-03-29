@@ -29,7 +29,7 @@ interface SocketAuthPayload {
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: '*', // Configure in production
+    origin: ['http://localhost:4000'], // Configure in production
     methods: ['GET', 'POST'],
   },
   namespace: 'common',
@@ -86,6 +86,7 @@ export class CommonWebSocketGateway
   @SubscribeMessage(SocketEvents.MESSAGE)
   handleMessage(@MessageBody() data: { room: string; message: string }) {
     this.logger.log(`Message received for room ${data.room}: ${data.message}`);
+    console.log('message', data);
     this.server.to(data.room).emit(SocketEvents.MESSAGE, data);
   }
 
