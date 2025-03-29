@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import InputField from "../components/Reusable/form/InputField.vue";
-import Button from "../components/Reusable/form/Button.vue";
+import ButtonUI from "../components/Reusable/form/Button.vue";
 
 const username = ref("imru");
 const password = ref("12345");
@@ -14,7 +14,7 @@ const handleLogin = async () => {
   try {
     if (username.value.trim()) {
       await authStore.login(username.value, password.value);
-      // router.push("/chat");
+      router.push("/chat");
     }
   } catch (error) {
     console.log(error);
@@ -31,7 +31,7 @@ const handleLogin = async () => {
       <div class="flex flex-col gap-4">
         <input-field v-model="username" label="Username" inputClasses="mb-4" />
         <input-field v-model="password" label="Password" />
-        <Button label="Login" @click.stop="handleLogin" />
+        <ButtonUI label="Login" @click.stop="handleLogin" />
       </div>
     </div>
   </div>

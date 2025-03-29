@@ -1,46 +1,51 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { io } from 'socket.io-client';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onUnmounted, inject } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const router = useRouter();
-const messages = ref<{ username: string; text: string; }[]>([]);
-const newMessage = ref('');
-const socket = io('http://localhost:3000');
-
+const messages = ref<{ username: string; text: string }[]>([]);
+const newMessage = ref("");
+// const socket = io('http://localhost:3000');
+const socket = inject("socket") as { emit: (event: string, data: any) => void };
 const sendMessage = () => {
-  if (newMessage.value.trim() && authStore.user) {
-    const messageData = {
-      username: authStore.user.username,
-      text: newMessage.value.trim()
-    };
-    socket.emit('chat message', messageData);
-    newMessage.value = '';
-  }
+  // if (newMessage.value.trim() && authStore.user) {
+  const messageData = {
+    // username: authStore.user.username,
+    text: newMessage.value.trim(),
+  };
+
+  console.log("message");
+
+  socket.emit("message", messageData);
+  // socket.emit('chat message', messageData);
+  newMessage.value = "";
+  // }
 };
 
 const handleLogout = () => {
   authStore.logout();
-  router.push('/');
+  router.push("/");
 };
 
 onMounted(() => {
-  socket.on('chat message', (msg) => {
-    messages.value.push(msg);
-  });
+  // socket.on('chat message', (msg) => {
+  //   messages.value.push(msg);
+  // });
 });
 
 onUnmounted(() => {
-  socket.disconnect();
+  // socket.disconnect();
 });
 </script>
 
 <template>
   <div class="flex flex-col h-screen bg-gray-100">
     <header class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div
+        class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center"
+      >
         <h1 class="text-xl font-semibold text-gray-800">Chat Room</h1>
         <div class="flex items-center gap-4">
           <span class="text-gray-600">{{ authStore.user?.username }}</span>
@@ -61,7 +66,7 @@ onUnmounted(() => {
           :key="index"
           class="bg-white rounded-lg shadow p-4"
           :class="{
-            'ml-auto max-w-lg': message.username === authStore.user?.username
+            'ml-auto max-w-lg': message.username === authStore.user?.username,
           }"
         >
           <div class="font-medium text-gray-900">{{ message.username }}</div>
@@ -78,10 +83,11 @@ onUnmounted(() => {
             type="text"
             placeholder="Type a message..."
             class="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          />
           <button
             type="submit"
             class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            @click="sendMessage"
           >
             Send
           </button>
